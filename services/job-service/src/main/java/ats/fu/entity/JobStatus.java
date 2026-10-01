@@ -1,4 +1,7 @@
 package ats.fu.entity;
 
-public class JobStatus {
+public enum JobStatus {
+    DRAFT,
+    PUBLISHED,
+    CLOSED
 }
