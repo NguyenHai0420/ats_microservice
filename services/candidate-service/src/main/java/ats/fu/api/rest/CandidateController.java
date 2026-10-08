@@ -1,7 +1,7 @@
 package ats.fu.api.rest;
 
-import ats.fu.api.application.port.in.CreateCandidatePort;
-import ats.fu.api.application.port.in.commands.CandidateCommand;
+import ats.fu.application.port.in.CreateCandidatePort;
+import ats.fu.application.command.CandidateCommand;
 import ats.fu.api.dto.CandidateRequest;
 import ats.fu.api.dto.CandidateResponse;
 import lombok.RequiredArgsConstructor;

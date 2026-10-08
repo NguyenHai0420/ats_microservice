@@ -31,7 +31,7 @@ public class JobController {
                         .build());
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<ResponseApi> read(@Valid @PathVariable(name = "id") UUID uuid) {
         return ResponseEntity.ok(
                 ResponseApi

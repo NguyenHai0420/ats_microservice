@@ -1,4 +1,7 @@
 package ats.fu.entity;
 
-public class InterviewResult {
+public enum InterviewResult {
+    PENDING,
+    PASS,
+    FAIL
 }

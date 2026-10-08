@@ -1,4 +1,9 @@
 package ats.fu.entity;
 
-public class InterviewType {
+public enum InterviewType {
+    PHONE,
+    VIDEO,
+    ONSITE,
+    TECHNICAL,
+    HR
 }

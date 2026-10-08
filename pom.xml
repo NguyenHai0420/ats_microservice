@@ -12,6 +12,7 @@
         <module>services/job-service</module>
         <module>services/application-service</module>
         <module>services/candidate-service</module>
+        <module>infras/api-gateway</module>
     </modules>
 
     <properties>

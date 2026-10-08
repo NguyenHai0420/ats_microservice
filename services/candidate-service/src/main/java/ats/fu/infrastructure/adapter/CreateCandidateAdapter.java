@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CreateCandidateAdapter implements SaveCandidatePort {
     private final CandidateJpaRepository candidateJpaRepository;
+
     @Override
     public CandidateAggregate save(CandidateAggregate aggregate) {
         // map aggregate to Entity
@@ -29,3 +30,4 @@ public class CreateCandidateAdapter implements SaveCandidatePort {
 
         return aggregate;
     }
+}

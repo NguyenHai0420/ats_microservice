@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
-public class CorrelationldFilter implements GlobalFilter, Ordered {
+public class CorrelationIdFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("Correlation ID filter started");
