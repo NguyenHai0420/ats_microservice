@@ -7,6 +7,7 @@ import ats.fu.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -19,6 +20,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseApi> create(@Valid @RequestBody JobRequest jobRequest) {
         JobResponse jobResponse = jobService.save(jobRequest);
 
@@ -31,14 +33,19 @@ public class JobController {
                         .build());
     }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ResponseApi> read(@Valid @PathVariable(name = "id") UUID uuid) {
+//        return ResponseEntity.ok(
+//                ResponseApi
+//                        .builder()
+//                        .code(HttpStatus.ACCEPTED)
+//                        .message("")
+//                        .data(jobService.findById(uuid))
+//                        .build());
+//    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseApi> read(@Valid @PathVariable(name = "id") UUID uuid) {
-        return ResponseEntity.ok(
-                ResponseApi
-                        .builder()
-                        .code(HttpStatus.ACCEPTED)
-                        .message("")
-                        .data(jobService.findById(uuid))
-                        .build());
+    public ResponseEntity<JobResponse> read(@Valid @PathVariable(name = "id") UUID uuid) {
+        return ResponseEntity.ok(jobService.findById(uuid));
     }
 }

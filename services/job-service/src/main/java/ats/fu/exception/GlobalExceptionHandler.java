@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        e.printStackTrace();
-        log.error(e.getMessage());
+    public ResponseEntity<String> handleException(BusinessException e) {
+        log.error("Business error [type={}]: {}", e.getType(), e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        HttpStatus status = switch (e.getType()) {
+            case 3 -> HttpStatus.NOT_FOUND;       // Resource not found
+            default -> HttpStatus.BAD_REQUEST;     // Validation errors
+        };
+
+        return ResponseEntity.status(status).body(e.getMessage());
     }
 }
+

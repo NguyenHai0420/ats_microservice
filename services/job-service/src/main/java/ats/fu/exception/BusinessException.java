@@ -1,5 +1,8 @@
 package ats.fu.exception;
 
+import lombok.Getter;
+
+@Getter
 public class BusinessException extends RuntimeException {
     private int type;
     private String message;

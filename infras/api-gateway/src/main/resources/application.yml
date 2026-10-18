@@ -1,50 +1,79 @@
 server:
   port: 8080
 
-  spring:
-    application:
-      name: api-gateway
-    cloud:
-      gateway:
-#        globalcors:
-#          cors-Configurations:
-#            '[/**]':
-#              allowedOrigins:
-#                - "http://localhost:5173"
-#                - "https://app.example.com"
-#              allowedMethods:
-#                - GET
-#                - POST
-#                - PUT
-#                - DELETE
-#                - OPTIONS
-#              allowedHeaders:
-#                - "*"
-#              exposedHeaders:
-#                - X-Ratelimit-Remaining
-#              allowedCredentials: true
-#                - maxAge: 3600
-        server:
-          webflux:
-            routes:
-              - id: job-service
-                uri: http://localhost:8081
-                predicates:
-                  - Path=/api/v1/jobs/**
-              - id: job-service
-                uri: http://localhost:8082
-                predicates:
-                  - Path=/api/v1/candidates/**
-              - id: job-service
-                uri: http://localhost:8083
-                predicates:
-                  - Path=/api/v1/applications/**
-              - id: job-service
-                uri: http://localhost:8084
-                predicates:
-                  - Path=/api/v1/notifications/**
-              - id: job-service
-                uri: http://localhost:8085
-                predicates:
-                  - Path=/api/v1/cvparse/**
-#                  Header=X-Web-Client
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      #      globalcors:
+      #        cors-configurations:
+      #          '[/**]':
+      #            allowedOrigins:
+      #              - "http://localhost:5173"
+      #              - "https://app.example.com"
+      #            allowedMethods:
+      #              - GET
+      #              - POST
+      #              - PUT
+      #              - DELETE
+      #              - OPTIONS
+      #            allowedHeaders:
+      #              - "*"
+      #            exposedHeaders:
+      #              - X-RateLimit-Remaining
+      #            allowCredentials: true
+      #            maxAge: 3600
+
+    server:
+      routes:
+        - id: job-service
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/**
+        - id: candidate-service
+          uri: lb://candidate-service
+          predicates:
+            - Path=/api/v1/candidates/**
+        - id: application-service
+          uri: lb://application-service
+          predicates:
+            - Path=/api/v1/applications/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+        - id: cvparse-service
+          uri: lb://cvparse-service
+          predicates:
+            - Path=/api/v1/cvparse/**
+
+ app:
+   oidc:
+     issuer-uri: ${GOOGLE_ISSUER_URI}
+     jwk-set-uri: ${GOOGLE_JWK_SET_URI}
+     client-id: ${GOOGLE_CLIENT_ID}
+     client-secret: ${GOOGLE_CLIENT_SECRET}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  # Địa chỉ của Eureka Server
+    fetch-registry: true  # Tải danh sách các dịch vụ từ Eureka Server
+    register-with-eureka: true  # Đăng ký dịch vụ này với Eureka Server
+  instance:
+    prefer-ip-address: true  # Sử dụng địa chỉ IP thay vì hostname
+    lease-renewal-interval-in-seconds: 10  # Thời gian gia hạn đăng ký (tùy chỉnh theo nhu cầu)
+    lease-expiration-duration-in-seconds: 30  # Thời gian hết hạn đăng ký (tùy chỉnh theo nhu cầu)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers,threaddump
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class ApplicationResponse {
-    private UUID id;
+    private Long id;
     private Long candidateId;
     private UUID jobId;
     private String cvFileUrl;

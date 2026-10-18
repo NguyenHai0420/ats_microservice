@@ -1,7 +1,7 @@
 package ats.fu.domain.aggregate;
 
 import ats.fu.application.command.CandidateCommand;
-import ats.fu.enums.CandidateStatus;
+
 import ats.fu.infrastructure.persistence.entity.CandidateStatus;
 import lombok.Getter;
 
