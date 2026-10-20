@@ -10,6 +10,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(
@@ -45,6 +46,9 @@ public class Application {
     @Column(nullable = false, length = 50)
     private ApplicationStatus status;
 
+    @Column(name = "cv_id")
+    private Long cvId;
+
     @Column(name = "cv_file_url", nullable = false, length = 1000)
     private String cvFileUrl;
 
@@ -56,90 +60,19 @@ public class Application {
         this.appliedAt = OffsetDateTime.now();
     }
 
+    @Builder.Default
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StageTransition> stageTransitions = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvaluationNote> evaluationNotes = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interview> interviews = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActionableEmailToken> actionableEmailTokens = new ArrayList<>();
-
-    public Application() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UUID getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(UUID jobId) {
-        this.jobId = jobId;
-    }
-
-    public Long getCandidateId() {
-        return candidateId;
-    }
-
-    public void setCandidateId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
-
-    public Long getCvId() {
-        return cvId;
-    }
-
-    public void setCvId(Long cvId) {
-        this.cvId = cvId;
-    }
-
-    public UUID getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(UUID departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public Long getTransferredFrom() {
-        return transferredFrom;
-    }
-
-    public void setTransferredFrom(Long transferredFrom) {
-        this.transferredFrom = transferredFrom;
-    }
-
-    public PipelineStage getPipelineStage() {
-        return pipelineStage;
-    }
-
-    public void setPipelineStage(PipelineStage pipelineStage) {
-        this.pipelineStage = pipelineStage;
-    }
-
-    public ApplicationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ApplicationStatus status) {
-        this.status = status;
-    }
-
-    public OffsetDateTime getAppliedAt() {
-        return appliedAt;
-    }
-
-    public void setAppliedAt(OffsetDateTime appliedAt) {
-        this.appliedAt = appliedAt;
-    }
 }

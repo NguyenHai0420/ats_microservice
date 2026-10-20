@@ -3,6 +3,7 @@ package ats.fu.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -16,44 +17,49 @@ import java.util.List;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
-    @Value("${app.oidc.jwk-set-uri}")
-    private String jwkSetUri;
+        @Value("${app.oidc.jwk-set-uri}")
+        private String jwkSetUri;
 
-    @Value("${app.oidc.issuer}")
-    private String issuer;
+        @Value("${app.oidc.issuer}")
+        private String issuer;
 
-    @Value("${app.oidc.client-id}")
-    private String clientId;
+        @Value("${app.oidc.client-id}")
+        private String clientId;
 
-    public SecurityWebFilterChain configure(ServerHttpSecurity http) {
-        return http.cors(Customizer.withDefaults())
-                .csrf((csrf) -> csrf.disable())
-                .authorizeExchange(exchange -> {
-                    exchange.pathMatchers("/public/**").permitAll()
-                            .pathMatchers("/actuator/health").permitAll()
-                            .anyExchange().authenticated();
-                }).build();
+        @Bean
+        public SecurityWebFilterChain configure(ServerHttpSecurity http) {
+                return http.cors(Customizer.withDefaults())
+                                .csrf((csrf) -> csrf.disable())
+                                .authorizeExchange(exchange -> {
+                                        exchange.pathMatchers("/public/**").permitAll()
+                                                        .pathMatchers("/actuator/health").permitAll()
+                                                        .pathMatchers("/api/v1/jobs/**")
+                                                        .permitAll()
+                                                        .pathMatchers("/api/v1/candidates/**")
+                                                        .permitAll()
+                                                        .pathMatchers("/api/v1/applications/**")
+                                                        .permitAll()
+                                                        .anyExchange().authenticated();
+                                })
+                                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                                .build();
+        }
 
+        @Bean
+        ReactiveJwtDecoder jwtDecoder() {
+                NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri).build();
 
-    }
+                // 1. chữ ký do decoder kiểm tra; validator này kiểm tra exp, nbf và iss
+                OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
 
-    @Bean
-    ReactiveJwtDecoder jwtDecoder() {
-        NimbusReactiveJwtDecoder decoder =
-                NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri).build();
+                // 2. aud phải chứa Client ID của CHÍNH ỨNG DỤNG, nếu không token được cấp cho
+                // ứng dụng khác
+                OAuth2TokenValidator<Jwt> withAudience = new JwtClaimValidator<List<String>>(
+                                "aud",
+                                aud -> aud != null && aud.contains(clientId));
 
-        // 1. chữ ký do decoder kiểm tra; validator này kiểm tra exp, nbf và iss
-        OAuth2TokenValidator<Jwt> withIssuer =
-                JwtValidators.createDefaultWithIssuer(issuer);
-
-        // 2. aud phải chứa Client ID của CHÍNH ỨNG DỤNG, nếu không token được cấp cho ứng dụng khác
-        OAuth2TokenValidator<Jwt> withAudience =
-                new JwtClaimValidator<List<String>>(
-                        "aud",
-                        aud -> aud != null && aud.contains(clientId));
-
-        decoder.setJwtValidator(
-                new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
-        return decoder;
-    }
+                decoder.setJwtValidator(
+                                new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
+                return decoder;
+        }
 }

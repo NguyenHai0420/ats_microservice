@@ -1,0 +1,114 @@
+-- ====================================================================
+-- DATABASE: candidate_sdb
+-- ====================================================================
+
+-- 1. Thêm 3 ứng viên mẫu (Candidates)
+INSERT INTO candidates (
+    id, user_id, full_name, status, source, utm_source, utm_medium, utm_campaign, is_duplicate, cv_file_id, parsed_cv_data
+)
+VALUES
+    -- Ứng viên 1: Senior Java Developer
+    (
+        1,
+        '11111111-1111-1111-1111-111111111111',
+        'Nguyễn Văn An',
+        'ACTIVE',
+        'LinkedIn',
+        'linkedin',
+        'cpc',
+        'talent_hunt_2026',
+        false,
+        NULL,
+        '{
+          "fullName": "Nguyễn Văn An",
+          "email": "nguyenvanan.dev@gmail.com",
+          "phone": "0901234567",
+          "summary": "Senior Java Developer với hơn 5 năm kinh nghiệm về Spring Boot, Microservices.",
+          "skills": ["Java", "Spring Boot", "PostgreSQL", "Kafka", "Docker", "Kubernetes"]
+        }'::jsonb
+    ),
+    -- Ứng viên 2: Frontend Engineer
+    (
+        2,
+        '22222222-2222-2222-2222-222222222222',
+        'Trần Thị Bích',
+        'ACTIVE',
+        'TopCV',
+        'topcv',
+        'organic',
+        'frontend_q4',
+        false,
+        NULL,
+        '{
+          "fullName": "Trần Thị Bích",
+          "email": "tranbich.frontend@gmail.com",
+          "phone": "0912345678",
+          "summary": "Frontend Engineer chuyên về React, Next.js và TailwindCSS với 3 năm kinh nghiệm.",
+          "skills": ["React", "TypeScript", "Next.js", "TailwindCSS", "Redux Toolkit"]
+        }'::jsonb
+    ),
+    -- Ứng viên 3: Product Owner
+    (
+        3,
+        '33333333-3333-3333-3333-333333333333',
+        'Lê Hoàng Cường',
+        'ACTIVE',
+        'Referral',
+        'internal_referral',
+        'portal',
+        'employee_referral',
+        false,
+        NULL,
+        '{
+          "fullName": "Lê Hoàng Cường",
+          "email": "cuong.lehoang@gmail.com",
+          "phone": "0988776655",
+          "summary": "Product Owner có kinh nghiệm dẫn dắt các đội ngũ Agile và phát triển sản phẩm Fintech.",
+          "skills": ["Product Management", "Agile/Scrum", "Business Analysis", "Jira", "SQL"]
+        }'::jsonb
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Thêm CV tương ứng cho 3 ứng viên
+INSERT INTO cvs (id, candidate_id, file_path, file_type, size_bytes, parsed_data, parse_status, uploaded_at)
+VALUES
+    (
+        1,
+        1,
+        's3://ats-cv-bucket/cvs/nguyen_van_an_cv.pdf',
+        'application/pdf',
+        245760,
+        '{"raw_text": "Nguyen Van An - Senior Java Developer...", "score": 90}'::jsonb,
+        'PARSED',
+        NOW() - INTERVAL '5 days'
+    ),
+    (
+        2,
+        2,
+        's3://ats-cv-bucket/cvs/tran_thi_bich_cv.pdf',
+        'application/pdf',
+        184320,
+        '{"raw_text": "Tran Thi Bich - Frontend Engineer...", "score": 85}'::jsonb,
+        'PARSED',
+        NOW() - INTERVAL '3 days'
+    ),
+    (
+        3,
+        3,
+        's3://ats-cv-bucket/cvs/le_hoang_cuong_cv.pdf',
+        'application/pdf',
+        312500,
+        '{"raw_text": "Le Hoang Cuong - Product Owner...", "score": 88}'::jsonb,
+        'PARSED',
+        NOW() - INTERVAL '1 days'
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Cập nhật cv_file_id trỏ về CV của ứng viên
+UPDATE candidates SET cv_file_id = 1 WHERE id = 1;
+UPDATE candidates SET cv_file_id = 2 WHERE id = 2;
+UPDATE candidates SET cv_file_id = 3 WHERE id = 3;
+
+-- Đồng bộ sequence cho các lần INSERT tiếp theo không bị trùng ID
+SELECT setval(pg_get_serial_sequence('candidates', 'id'), COALESCE(MAX(id), 1)) FROM candidates;
+SELECT setval(pg_get_serial_sequence('cvs', 'id'), COALESCE(MAX(id), 1)) FROM cvs;

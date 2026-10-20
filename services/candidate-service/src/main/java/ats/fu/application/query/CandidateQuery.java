@@ -1,4 +1,4 @@
 package ats.fu.application.query;
 
-public class CandidateQuery {
+public record CandidateQuery(Long id) {
 }

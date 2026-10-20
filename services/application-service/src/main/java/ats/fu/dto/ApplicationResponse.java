@@ -1,14 +1,25 @@
 package ats.fu.dto;
 
-import lombok.Data;
+import ats.fu.entity.Application;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Data
-public class ApplicationResponse {
-    private Long id;
-    private Long candidateId;
-    private UUID jobId;
-    private String cvFileUrl;
-    private OffsetDateTime appliedAt;
+public record ApplicationResponse (
+        Long id,
+        UUID jobId,
+        Long candidateId,
+        String cvUrl,
+        String status,
+        OffsetDateTime appliedAt
+){
+    public static ApplicationResponse from(Application application) {
+        return new ApplicationResponse(
+                application.getId(),
+                application.getJobId(),
+                application.getCandidateId(),
+                application.getCvFileUrl(),
+                application.getStatus().name(),
+                application.getAppliedAt());
+    }
 }

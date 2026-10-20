@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Getter
 public class CandidateAggregate {
+    private Long id;
     private String fullName;
     private String source;
     private String utmSource;
@@ -17,6 +18,9 @@ public class CandidateAggregate {
     private String utmCampaign;
     private CandidateStatus status;
     private UUID userId;
+    private Long activeCvId;
+    private ats.fu.infrastructure.persistence.entity.ParsedCvData parsedCvData;
+    private boolean duplicate;
 
     private CandidateAggregate() {
 
@@ -43,6 +47,31 @@ public class CandidateAggregate {
             throw  new IllegalArgumentException("User id is null");
         }
         candidateAggregate.userId = command.userId();
+        return candidateAggregate;
+    }
+
+    public static CandidateAggregate restore(Long id,
+                                             String fullName,
+                                             String source,
+                                             String utmSource,
+                                             String utmMedium,
+                                             String utmCampaign,
+                                             CandidateStatus status,
+                                             Long activeCvId,
+                                             ats.fu.infrastructure.persistence.entity.ParsedCvData parsedCvData,
+                                             boolean duplicate) {
+        CandidateAggregate candidateAggregate = new CandidateAggregate();
+        candidateAggregate.id = id;
+        candidateAggregate.fullName = fullName;
+        candidateAggregate.source = source;
+        candidateAggregate.utmSource = utmSource;
+        candidateAggregate.utmMedium = utmMedium;
+        candidateAggregate.utmCampaign = utmCampaign;
+        candidateAggregate.status = status;
+        candidateAggregate.activeCvId = activeCvId;
+        candidateAggregate.parsedCvData = parsedCvData;
+        candidateAggregate.duplicate = duplicate;
+
         return candidateAggregate;
     }
 }

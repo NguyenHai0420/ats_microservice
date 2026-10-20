@@ -9,5 +9,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CandidateJpaRepository extends JpaRepository<CandidateEntity, UUID> {
+public interface CandidateJpaRepository extends JpaRepository<CandidateEntity, Long> {
 }

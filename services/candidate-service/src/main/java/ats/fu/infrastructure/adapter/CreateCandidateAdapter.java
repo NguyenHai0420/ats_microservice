@@ -20,14 +20,26 @@ public class CreateCandidateAdapter implements SaveCandidatePort {
         CandidateEntity candidateEntity = CandidateEntity.builder()
                 .fullName(aggregate.getFullName())
                 .source(aggregate.getSource())
+                .utmSource(aggregate.getUtmSource())
                 .utmMedium(aggregate.getUtmMedium())
                 .utmCampaign(aggregate.getUtmCampaign())
                 .status(aggregate.getStatus())
                 .userId(aggregate.getUserId())
                 .build();
 
-        candidateJpaRepository.save(candidateEntity);
+        CandidateEntity savedEntity = candidateJpaRepository.save(candidateEntity);
 
-        return aggregate;
+        return CandidateAggregate.restore(
+                savedEntity.getId(),
+                savedEntity.getFullName(),
+                savedEntity.getSource(),
+                savedEntity.getUtmSource(),
+                savedEntity.getUtmMedium(),
+                savedEntity.getUtmCampaign(),
+                savedEntity.getStatus(),
+                savedEntity.getCvFileId(),
+                savedEntity.getParsedCvData(),
+                savedEntity.isDuplicate()
+        );
     }
 }

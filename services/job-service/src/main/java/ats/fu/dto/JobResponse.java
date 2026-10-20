@@ -13,6 +13,8 @@ import java.util.UUID;
 public class JobResponse {
     private UUID id;
 
+    private UUID departmentId;
+
     private String title;
 
     private String description;

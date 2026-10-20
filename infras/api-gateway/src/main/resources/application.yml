@@ -6,54 +6,37 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      #      globalcors:
-      #        cors-configurations:
-      #          '[/**]':
-      #            allowedOrigins:
-      #              - "http://localhost:5173"
-      #              - "https://app.example.com"
-      #            allowedMethods:
-      #              - GET
-      #              - POST
-      #              - PUT
-      #              - DELETE
-      #              - OPTIONS
-      #            allowedHeaders:
-      #              - "*"
-      #            exposedHeaders:
-      #              - X-RateLimit-Remaining
-      #            allowCredentials: true
-      #            maxAge: 3600
+      server:
+        webflux:
+          routes:
+            - id: job-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/v1/jobs/**
+            - id: candidate-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/v1/candidates/**
+            - id: application-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/v1/applications/**
+            - id: notification-service
+              uri: lb://notification-service
+              predicates:
+                - Path=/api/v1/notifications/**
+            - id: cvparse-service
+              uri: lb://cvparse-service
+              predicates:
+                - Path=/api/v1/cvparse/**
 
-    server:
-      routes:
-        - id: job-service
-          uri: lb://job-service
-          predicates:
-            - Path=/api/v1/jobs/**
-        - id: candidate-service
-          uri: lb://candidate-service
-          predicates:
-            - Path=/api/v1/candidates/**
-        - id: application-service
-          uri: lb://application-service
-          predicates:
-            - Path=/api/v1/applications/**
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/v1/notifications/**
-        - id: cvparse-service
-          uri: lb://cvparse-service
-          predicates:
-            - Path=/api/v1/cvparse/**
-
- app:
-   oidc:
-     issuer-uri: ${GOOGLE_ISSUER_URI}
-     jwk-set-uri: ${GOOGLE_JWK_SET_URI}
-     client-id: ${GOOGLE_CLIENT_ID}
-     client-secret: ${GOOGLE_CLIENT_SECRET}
+app:
+  oidc:
+    issuer: ${GOOGLE_ISSUER_URI}
+    issuer-uri: ${GOOGLE_ISSUER_URI}
+    jwk-set-uri: ${GOOGLE_JWK_SET_URI}
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
 
 eureka:
   client:
